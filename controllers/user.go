@@ -145,3 +145,31 @@ func UserUpdate(c *gin.Context) {
 	})
 
 }
+
+func UserDelete(c *gin.Context) {
+	db := database.GetDB()
+	userData := c.MustGet("UserData").(jwt.MapClaims)
+
+	userID := uint(userData["id"].(float64))
+	var User models.User
+
+	err := db.Model(&User).Delete(&User, userID).Error
+
+	if err != nil {
+		message := err.Error()
+		if message == errEmail || message == errUsername {
+			message = "Username or Email Already Exists"
+		}
+
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad Request",
+			"message": message,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "your account has been sucessfully deleted",
+	})
+
+}
