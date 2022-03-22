@@ -24,7 +24,7 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 		return
 	}
 
-	if u.Age < 8 {
+	if !(u.Age > 8) {
 		err = errors.New("Minimum Age is 9")
 		return
 	}
