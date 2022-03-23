@@ -5,9 +5,11 @@ import (
 	"final-project/helpers"
 	"final-project/models"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
+	"gorm.io/gorm/clause"
 )
 
 func CreatePhoto(c *gin.Context){
@@ -86,9 +88,60 @@ func GetPhoto(c *gin.Context){
 }
 
 func UpdatePhoto(c *gin.Context){
+	db:=database.GetDB()
+	// userData:=c.MustGet("UserData").(jwt.MapClaims)
+	contentType:=helpers.GetContentType(c)
+	Photo :=models.Photo{}
 
+	photoID,_:=strconv.Atoi(c.Param("photoID"))
+	// userID:=uint(userData["id"].(float64))
+
+	if contentType==appJSON{
+		c.ShouldBindJSON(&Photo)
+	}else{
+		c.ShouldBind(&Photo)
+	}
+
+	// Photo.UserID=userID
+	// Photo.ID=uint(productID)
+
+	err:=db.Model(&Photo).Where("id=?",photoID).Clauses(clause.Returning{}).Updates(models.Photo{Title:Photo.Title,Caption:Photo.Caption,PhotoURL: Photo.PhotoURL}).Error
+
+	if err!=nil{
+		c.JSON(http.StatusBadRequest,gin.H{
+			"err":"Bad Request",
+			"message":err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK,gin.H{
+		"id":Photo.ID,
+		"title":Photo.Title,
+		"caption":Photo.Caption,
+		"photo_url":Photo.PhotoURL,
+		"user_id":Photo.UserID,
+		"updated_at":Photo.UpdatedAt,
+	})
 }
 
 func DeletePhoto(c *gin.Context){
+	db := database.GetDB()
+	photoID,_:=strconv.Atoi(c.Param("photoID"))
 
+	var Photo models.Photo
+
+	err := db.Model(&Photo).Delete(&Photo, photoID).Error
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad Request",
+			"message": err,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "your photo has been sucessfully deleted",
+	})
 }

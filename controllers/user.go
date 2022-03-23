@@ -125,10 +125,6 @@ func UserUpdate(c *gin.Context) {
 
 	if err != nil {
 		message := err.Error()
-		if message == errEmail || message == errUsername {
-			message = "Username or Email Already Exists"
-		}
-
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Bad Request",
 			"message": message,
@@ -157,10 +153,6 @@ func UserDelete(c *gin.Context) {
 
 	if err != nil {
 		message := err.Error()
-		if message == errEmail || message == errUsername {
-			message = "Username or Email Already Exists"
-		}
-
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Bad Request",
 			"message": message,
