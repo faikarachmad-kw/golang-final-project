@@ -24,6 +24,12 @@ func Authentication() gin.HandlerFunc {
 	}
 }
 
+func Authorization(input string) gin.HandlerFunc {
+return func(c *gin.Context){
+
+}
+}
+
 // func ProductAuthorization() gin.HandlerFunc {
 // 	return func(c *gin.Context) {
 // 		db := database.GetDB()
