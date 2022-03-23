@@ -73,3 +73,41 @@ func PhotoAuthorization() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+func SocialMediaAuthorization() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		db := database.GetDB()
+		photoID, err := strconv.Atoi(c.Param("socialMediaID"))
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+				"error":   "Bad Request",
+				"message": "Invalid Params",
+			})
+			return
+		}
+
+		userData := c.MustGet("UserData").(jwt.MapClaims)
+		userID := uint(userData["id"].(float64))
+		socMed := models.SocialMedia{}
+
+		err = db.Select("user_id").First(&socMed, uint(photoID)).Error
+
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+				"error":   "Data Not Found",
+				"message": "Not Exist",
+			})
+			return
+		}
+		if socMed.UserID != userID {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+				"error":   "Unauthorized",
+				"message": "Not Authorized",
+			})
+			return
+		}
+
+		c.Next()
+	}
+}
+

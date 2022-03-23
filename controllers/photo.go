@@ -89,12 +89,10 @@ func GetPhoto(c *gin.Context){
 
 func UpdatePhoto(c *gin.Context){
 	db:=database.GetDB()
-	// userData:=c.MustGet("UserData").(jwt.MapClaims)
 	contentType:=helpers.GetContentType(c)
 	Photo :=models.Photo{}
 
 	photoID,_:=strconv.Atoi(c.Param("photoID"))
-	// userID:=uint(userData["id"].(float64))
 
 	if contentType==appJSON{
 		c.ShouldBindJSON(&Photo)
@@ -102,8 +100,6 @@ func UpdatePhoto(c *gin.Context){
 		c.ShouldBind(&Photo)
 	}
 
-	// Photo.UserID=userID
-	// Photo.ID=uint(productID)
 
 	err:=db.Model(&Photo).Where("id=?",photoID).Clauses(clause.Returning{}).Updates(models.Photo{Title:Photo.Title,Caption:Photo.Caption,PhotoURL: Photo.PhotoURL}).Error
 

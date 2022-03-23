@@ -41,8 +41,8 @@ func StartApp() *gin.Engine {
 		socmedRouter.Use(middlewares.Authentication())
 		socmedRouter.POST("/",controllers.CreateSocmed)
 		socmedRouter.GET("/",controllers.GetSocmed)
-		socmedRouter.PUT("/:commentID",middlewares.Authorization("socmed"),controllers.UpdateSocmed)
-		socmedRouter.DELETE("/:commentID",middlewares.Authorization("socmed"),controllers.DeleteSocmed)
+		socmedRouter.PUT("/:socialMediaID",middlewares.SocialMediaAuthorization(),controllers.UpdateSocmed)
+		socmedRouter.DELETE("/:socialMediaID",middlewares.SocialMediaAuthorization(),controllers.DeleteSocmed)
 
 	}
 	

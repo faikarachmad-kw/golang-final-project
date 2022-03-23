@@ -5,9 +5,11 @@ import (
 	"final-project/helpers"
 	"final-project/models"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
+	"gorm.io/gorm/clause"
 )
 
 func CreateSocmed(c *gin.Context) {
@@ -83,9 +85,57 @@ func GetSocmed(c *gin.Context) {
 	c.JSON(http.StatusOK,gin.H{
 		"social_medias":resData})
 }
+
 func UpdateSocmed(c *gin.Context) {
+	db:=database.GetDB()
+	contentType:=helpers.GetContentType(c)
+	socMed :=models.SocialMedia{}
 
+	socMedID,_:=strconv.Atoi(c.Param("socialMediaID"))
+
+	if contentType==appJSON{
+		c.ShouldBindJSON(&socMed)
+	}else{
+		c.ShouldBind(&socMed)
+	}
+
+
+	err:=db.Model(&socMed).Where("id=?",socMedID).Clauses(clause.Returning{}).Updates(models.SocialMedia{Name: socMed.Name,SocialMediaURL: socMed.SocialMediaURL}).Error
+
+	if err!=nil{
+		c.JSON(http.StatusBadRequest,gin.H{
+			"err":"Bad Request",
+			"message":err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK,gin.H{
+		"id":socMed.ID,
+		"name":socMed.Name,
+		"social_media_url":socMed.SocialMediaURL,
+		"user_id":socMed.UserID,
+		"updated_at":socMed.UpdatedAt,
+	})
 }
-func DeleteSocmed(c *gin.Context) {
 
+func DeleteSocmed(c *gin.Context) {
+	db := database.GetDB()
+	socMedID,_:=strconv.Atoi(c.Param("socialMediaID"))
+
+	var socMed models.SocialMedia
+
+	err := db.Model(&socMed).Delete(&socMed, socMedID).Error
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad Request",
+			"message": err,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "your social media has been sucessfully deleted",
+	})
 }
