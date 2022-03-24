@@ -30,6 +30,14 @@ func UserRegister(c *gin.Context) {
 		c.ShouldBind(&User)
 	}
 
+	if !(len(User.Password)>6){
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad Request",
+			"message": "Password must be at least 6 characters",
+		})
+		return
+	}
+
 	hashedPass := helpers.HashPass(User.Password)
 	User.Password = hashedPass
 

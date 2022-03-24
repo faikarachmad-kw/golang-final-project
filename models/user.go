@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/asaskevich/govalidator"
 	"gorm.io/gorm"
@@ -36,11 +37,18 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 }
 
 func (u *User) BeforeUpdate(tx *gorm.DB) (err error) {
-	_, errCreate := govalidator.ValidateStruct(u)
-
-	if errCreate != nil {
-		err = errCreate
+	if len(strings.TrimSpace(u.Username))==0{
+		err=errors.New("Username is required")
 		return
+	}
+	if len(strings.TrimSpace(u.Email))==0{
+		err=errors.New("Email is required")
+		return
+	}
+
+	if !(govalidator.IsEmail(u.Email)){
+		err=errors.New("Email format is invalid")
+		return	
 	}
 
 	err = nil
