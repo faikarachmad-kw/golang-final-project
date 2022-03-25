@@ -15,10 +15,10 @@ var (
 )
 
 const (
-	host     = "172.17.0.2"
+	host     = ""
 	port     = 5432
 	user     = "postgres"
-	password = "koinworks"
+	password = ""
 	dbname   = "final_project"
 )
 
