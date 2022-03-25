@@ -6,7 +6,8 @@ import (
 )
 
 func main() {
+	const PORT =":8080"
 	database.StartDB()
 	r := router.StartApp()
-	r.Run(":8080")
+	r.Run(PORT)
 }
