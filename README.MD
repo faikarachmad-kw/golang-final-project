@@ -1,2 +1,2 @@
 # Setting
-Please setting database info at ./database/db.go(18:22)
+Please make a .env in root according to the example at .env.example

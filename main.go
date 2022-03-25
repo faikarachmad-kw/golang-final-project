@@ -3,10 +3,14 @@ package main
 import (
 	"final-project/database"
 	"final-project/router"
+	"os"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	const PORT =":8080"
+	godotenv.Load()
+	PORT := os.Getenv("PORT")
 	database.StartDB()
 	r := router.StartApp()
 	r.Run(PORT)
